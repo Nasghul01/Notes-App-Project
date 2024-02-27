@@ -6,21 +6,17 @@ import Split from "react-split"
 import {nanoid} from "nanoid"
 
 export default function App() {
-    /**
-     * Challenge:
-     * 1. Every time the `notes` array changes, save it 
-     *    in localStorage. You'll need to use JSON.stringify()
-     *    to turn the array into a string to save in localStorage.
-     * 2. When the app first loads, initialize the notes state
-     *    with the notes saved in localStorage. You'll need to
-     *    use JSON.parse() to turn the stringified array back
-     *    into a real JS array.
-     */
     
-    const [notes, setNotes] = React.useState([])
+    const [notes, setNotes] = React.useState(
+        () => JSON.parse(localStorage.getItem("notes")) || [])
+
     const [currentNoteId, setCurrentNoteId] = React.useState(
         (notes[0] && notes[0].id) || ""
     )
+    
+    React.useEffect(() => {
+        localStorage.setItem("notes", JSON.stringify(notes))
+    },[notes])
     
     function createNewNote() {
         const newNote = {
@@ -31,18 +27,40 @@ export default function App() {
         setCurrentNoteId(newNote.id)
     }
     
+    //old function update
+    // function updateNote(text) {
+    //     setNotes(oldNotes => oldNotes.map(oldNote => {
+    //         return oldNote.id === currentNoteId
+    //             ? { ...oldNote, body: text }
+    //             : oldNote
+    //     }))
+    // }
+
     function updateNote(text) {
-        setNotes(oldNotes => oldNotes.map(oldNote => {
-            return oldNote.id === currentNoteId
-                ? { ...oldNote, body: text }
-                : oldNote
-        }))
+        setNotes( (oldNotes) =>{
+            const newArray = []
+            for (let i = 0 ; i < oldNotes.length ; i++){
+                const oldNote = oldNotes[i]
+                if(oldNote.id === currentNoteId ) {
+                    newArray.unshift({ ...oldNote, body: text})
+                }else {
+                    newArray.push(oldNote)
+                }
+            }
+            return newArray
+        } )
+        
     }
     
     function findCurrentNote() {
         return notes.find(note => {
             return note.id === currentNoteId
         }) || notes[0]
+    }
+
+    function deleteNote(event, noteId) {
+        event.stopPropagation()
+        setNotes(oldNotes => oldNotes.filter((note) => note.id !==  noteId))
     }
     
     return (
@@ -61,6 +79,7 @@ export default function App() {
                     currentNote={findCurrentNote()}
                     setCurrentNoteId={setCurrentNoteId}
                     newNote={createNewNote}
+                    deleteNote={deleteNote}
                 />
                 {
                     currentNoteId && 
