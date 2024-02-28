@@ -36,6 +36,7 @@ button:focus {
   display: flex;
   justify-content: space-around;
   align-items: center;
+  padding: 10px;
 }
 
 .sidebar--header > h3 {
@@ -73,6 +74,7 @@ button:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-top: 10px;
 }
 
 .title--delete {
