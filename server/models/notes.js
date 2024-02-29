@@ -1,10 +1,8 @@
 const mongoose = require("mongoose");
 
 const notesSchema = new mongoose.Schema({
-    name : String,
-    email : String,
-    phone : String,
-    message : String
+    id: String, 
+    body: String
 })
 
 const Notes = mongoose.model("enqueries", notesSchema);
